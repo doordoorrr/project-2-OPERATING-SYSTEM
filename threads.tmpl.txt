@@ -29,28 +29,40 @@ Gavin Walker <gbwalker42@tntech.edu>
 >> `struct' member, global or static variable, `typedef', or
 >> enumeration.  Identify the purpose of each in 25 words or less.
 
-
+int64_t wakeup_tick - this is used for the time that a thread should wake up
+struct list sleep_list - this is the global list of threads that are sleeping
 
 ---- ALGORITHMS ----
 
 >> A2: Briefly describe what happens in a call to timer_sleep(),
 >> including the effects of the timer interrupt handler.
 
+In timer_sleep(), execution is suspended of the calling thread until time has advanced by however
+many number of timer ticks that were sent to it. Unless the system is idle, the thread need not wake up after exactly x ticks, it just needs to be put on the ready queue after they have waited for the right amount of time. On each timer interrupt, the handler checks and unblocks any threads whose wake up time has arrived and leaves the rest for until their wake-up time arrives.
+
 >> A3: What steps are taken to minimize the amount of time spent in
 >> the timer interrupt handler?
+
+In order to minimize the amount of time spent in the interruot handler, the list of the asleep threads is sorted by whatever tick they are to wake up on. So, only the front of the list is checked. Also, the handler exits immediately if the front thread's wake up time is yet to come.
 
 ---- SYNCHRONIZATION ----
 
 >> A4: How are race conditions avoided when multiple threads call
 >> timer_sleep() simultaneously?
 
+It would be easy to use disabling interrupts, but instead we will use semaphores, locks, and condition variables to account for race conditions.
+
 >> A5: How are race conditions avoided when a timer interrupt occurs
 >> during a call to timer_sleep()?
+
+Though for this one, interrupt handlers can't use locks as needed, we will use disabling interrupts in this case only for this short critical region that is modifying the sleeping threads list
 
 ---- RATIONALE ----
 
 >> A6: Why did you choose this design?  In what ways is it superior to
 >> another design you considered?
+
+We chose to implement this design because it for one avoids busy waiting which was a major requirement of the project. Also, it works to minimize the amount of time spent in the interrupt handler. Also, we chose to only use disabling interrupts where absolutely necessary and in other regions use semaphores/locks. This is superior because even though disabling interrupts works to solve the issue, but turning them off increases latency of the interrupt handling which can make the machine feel slow and sluggish.
 
 			 PRIORITY SCHEDULING
 			 ===================
