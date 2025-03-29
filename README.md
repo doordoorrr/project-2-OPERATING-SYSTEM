@@ -13,6 +13,9 @@ The grading of the project will be done according to the following rubric (56 po
  
 
 (18 points) A completely working Alarm Clock implementation that passes all six (6) tests.
+
 (38 points) A fully functional Priority Scheduler that passes all twelve (12) tests.
-(37 points) A working advanced scheduler that passes all nine (9) tests. (optional )
+
+(37 points) A working advanced scheduler that passes all nine (9) tests. (optional)
+
 (12 points) A complete design document.
